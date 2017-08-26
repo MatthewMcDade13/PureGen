@@ -2,10 +2,14 @@
 //
 
 #include "stdafx.h"
+#include "windows.h"
+#include "Generator.h"
 
 
-int main()
-{
-    return 0;
+int main(int argc, char* argv[])
+{	
+	Generator gen("ayylmao");
+	gen.GenerateTemplate();
+	return 0;
 }
 
