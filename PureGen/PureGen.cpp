@@ -2,14 +2,18 @@
 //
 
 #include "stdafx.h"
-#include "windows.h"
 #include "Generator.h"
 
 
+using namespace std;
+
 int main(int argc, char* argv[])
 {	
-	Generator gen("ayylmao");
-	gen.GenerateTemplate();
+	Generator gen;
+	if (gen.ParseCommandArgs(argc, argv) != 0)
+	{
+		return 1;
+	}
 	return 0;
 }
 

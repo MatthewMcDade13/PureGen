@@ -10,10 +10,11 @@ private:
 
 
 public:
-	Generator(std::string className, std::string parentClass = "");	
+	Generator();	
 	~Generator();
 
 	void GenerateTemplate();
+	int ParseCommandArgs(int argc, char* argv[]);
 
 private:
 	Generator(const Generator& other) = delete;
