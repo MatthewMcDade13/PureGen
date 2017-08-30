@@ -4,16 +4,15 @@
 #include "stdafx.h"
 #include "Generator.h"
 
-
-using namespace std;
-
 int main(int argc, char* argv[])
 {	
+
 	Generator gen;
 	if (gen.ParseCommandArgs(argc, argv) != 0)
 	{
 		return 1;
 	}
-	return 0;
+
+	return gen.GenerateTemplate();	
 }
 
