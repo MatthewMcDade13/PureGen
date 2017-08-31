@@ -2,6 +2,7 @@
 
 #include "FileStructure.h"
 #include "FileExtension.h"
+#include "Inheritance.h"
 
 class Generator
 {
@@ -9,6 +10,10 @@ private:
 	std::string className;
 	std::string parentClass;
 	FileStructure fileStructure;
+	Inheritance inhAccessor;
+	bool hasCpyCtor = false;
+	bool hasAssigOp = false;
+	bool willSkipDirCheck = false;
 
 	int GenerateHeader();
 	int GenerateCPP();

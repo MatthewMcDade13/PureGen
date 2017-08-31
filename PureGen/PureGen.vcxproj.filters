@@ -33,6 +33,9 @@
     <ClInclude Include="FileExtension.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Inheritance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

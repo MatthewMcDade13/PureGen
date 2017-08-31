@@ -18,16 +18,38 @@ int Generator::GenerateHeader()
 
 	string text = "";
 	string definition = className;
+	string accessor = "";
+
+	if (parentClass.size() > 0)
+	{
+		switch (inhAccessor)
+		{
+			case Public:
+				accessor = "public";
+				break;
+			case Private:
+				accessor = "private";
+				break;
+			case Protected:
+				accessor = "protected";
+				break;
+		}
+	}
 
 	transform(definition.begin(), definition.end(), definition.begin(), toupper);
+
 	text += "#ifndef " + definition + "\n";
 	text += "#define " + definition + "\n\n";
-	text += "class " + className + "\n";
+	text += "class " + className + ": " + (parentClass.size() > 0 ? accessor : "") + "\n";
 	text += "{\n";
 	text += "private:\n";
 	text += "public:\n";
 	text += "\t" + className + "();\n";
 	text += "\t~" + className + "();\n";
+
+	if (hasCpyCtor) text += "\t" + className + "(const " + className + "& other);\n";
+	if (hasAssigOp) text += "\t" + className + "& " + "operator=(const " + className + "& rhs);\n";
+
 	text += "};\n\n";
 	text += "#endif\n";
 
@@ -48,9 +70,22 @@ int Generator::GenerateCPP()
 	string text = "";	
 	text += (string)"#include " + (string)"\"" + includePath + className + (string)".h\"\n\n";
 	text += className + "::" + className + "()\n";
-	text += "{\n}\n";
+	text += "{\n\n}\n\n";
 	text += className + "::" + '~' + className + "()\n";
-	text += "{\n}\n";
+	text += "{\n\n}\n\n";
+	if (hasAssigOp)
+	{
+		text += className + "& " + className + "::operator=(const " + className + "& rhs)\n";
+		text += "{\n";
+		text += "\tif (this == &rhs) return *this;\n";
+		text += "\treturn *this;\n";
+		text += "}\n\n";
+	}
+	if (hasCpyCtor)
+	{
+		text += className + "::" + className + "(const " + className + "& other)\n";
+		text += "{\n\n}\n\n";
+	}
 	text += '\n';
 
 	if (SaveFile(file, text) != 0)
@@ -104,6 +139,12 @@ int Generator::GenerateTemplate()
 
 int Generator::CheckDirectories()
 {
+	if (willSkipDirCheck == true)
+	{
+		fileStructure = FileStructure::Combined;
+		return 0;
+	}
+
 	// just create template for passed in class name
 	struct stat buf;	
 
@@ -147,24 +188,72 @@ int Generator::CheckDirectories()
 		}
 	}
 
+	fileStructure = FileStructure::Separate;
 	return 0;
 }
 
 int Generator::ParseCommandArgs(int argc, char* argv[])
 {
+	vector<string> args(argv + 1, argv + argc);
+
 	if (argc == 1)
 	{
 		cout << "No arguments given. Please at least specify Class Name." << endl;
 		return 1;
 	}
 
-	className = argv[1];
+	className = args[0];
 
 	// parentClass = argv[2];
 	if (argc > 2)
 	{
-		return 0;
-		// Check for arguments
+		for (size_t i = 1; i < args.size(); i++)
+		{
+			if (args[i].compare("-cc") == 0)
+			{
+				hasCpyCtor = true;
+				continue;
+			}
+			if (args[i].compare("-ao") == 0)
+			{
+				hasAssigOp = true;
+				continue;
+			}
+			if (args[i].compare("-nd"))
+			{
+				willSkipDirCheck = true;
+				continue;
+			}
+			if (args[i].compare("-i") == 0)
+			{
+				if (i + 1 <= args.size() - 1)
+				{
+					
+					if (args[i + 1].find('-') == -1)
+					{
+						if (args[i].compare("-ipri") == 0) inhAccessor = Inheritance::Private;
+						else if (args[i].compare("-ipro") == 0) inhAccessor = Inheritance::Protected;
+						else if (args[i].compare("-ipub") == 0) inhAccessor = Inheritance::Public;
+						else inhAccessor = Inheritance::Private;
+
+						parentClass = args[i + 1];
+						continue;
+					}
+					else
+					{
+						cout << "Given value for inherit flag cannot be a flag or contain character '-'" << endl;
+						return 1;
+					}
+
+				}
+				else
+				{
+					cout << "No Parameter given for inheritor flag." << endl;
+					return 1;
+				}
+			}
+		}
+		return CheckDirectories();		
 	}
 	else
 	{

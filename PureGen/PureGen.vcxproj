@@ -149,6 +149,7 @@
     <ClInclude Include="FileExtension.h" />
     <ClInclude Include="FileStructure.h" />
     <ClInclude Include="Generator.h" />
+    <ClInclude Include="Inheritance.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
