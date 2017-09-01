@@ -146,6 +146,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileExists.h" />
     <ClInclude Include="FileExtension.h" />
     <ClInclude Include="FileStructure.h" />
     <ClInclude Include="Generator.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileExists.cpp" />
     <ClCompile Include="Generator.cpp" />
     <ClCompile Include="PureGen.cpp" />
     <ClCompile Include="stdafx.cpp">

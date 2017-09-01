@@ -17,15 +17,17 @@ private:
 
 	int GenerateHeader();
 	int GenerateCPP();
-	void OpenFile(std::ofstream& file, FileExtension ext);
+	int CheckDirectories();
+	bool CheckFlag(const std::string& arg, const std::string& flag);
 	int SaveFile(std::ofstream& file, const std::string text);
+	int OpenFile(std::ofstream& file, FileExtension ext);
 
 public:
 	Generator();	
 	~Generator();
 
 	int GenerateTemplate();
-	int CheckDirectories();
+	
 	int ParseCommandArgs(int argc, char* argv[]);
 
 

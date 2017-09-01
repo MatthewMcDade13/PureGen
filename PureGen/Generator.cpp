@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Generator.h"
+#include "FileExists.h"
 
 using namespace std;
 
@@ -14,7 +15,10 @@ int Generator::GenerateHeader()
 {
 	ofstream file;
 
-	OpenFile(file, FileExtension::Header);
+	if (OpenFile(file, FileExtension::Header) != 0)
+	{
+		return 1;
+	}
 
 	string text = "";
 	string definition = className;
@@ -24,13 +28,13 @@ int Generator::GenerateHeader()
 	{
 		switch (inhAccessor)
 		{
-			case Public:
+			case Inheritance::Public:
 				accessor = "public";
 				break;
-			case Private:
+			case Inheritance::Private:
 				accessor = "private";
 				break;
-			case Protected:
+			case Inheritance::Protected:
 				accessor = "protected";
 				break;
 		}
@@ -40,7 +44,11 @@ int Generator::GenerateHeader()
 
 	text += "#ifndef " + definition + "\n";
 	text += "#define " + definition + "\n\n";
-	text += "class " + className + ": " + (parentClass.size() > 0 ? accessor : "") + "\n";
+	text += "class " + className;
+	if (parentClass.size() > 0)
+	{
+		text += " : " + accessor + " " + parentClass + "\n";
+	}
 	text += "{\n";
 	text += "private:\n";
 	text += "public:\n";
@@ -65,7 +73,10 @@ int Generator::GenerateCPP()
 	string includePath = fileStructure == FileStructure::Combined ? "./" : "../HeaderFiles/";
 	ofstream file;
 
-	OpenFile(file, FileExtension::Cpp);
+	if (OpenFile(file, FileExtension::Cpp) != 0)
+	{
+		return 1;
+	}
 
 	string text = "";	
 	text += (string)"#include " + (string)"\"" + includePath + className + (string)".h\"\n\n";
@@ -95,21 +106,45 @@ int Generator::GenerateCPP()
 	return 0;
 }
 
-void Generator::OpenFile(ofstream& file, FileExtension ext)
+int Generator::OpenFile(ofstream& file, FileExtension ext)
 {
 	string extension = ext == FileExtension::Header ? ".h" : ".cpp";
 	string folderName = ext == FileExtension::Header ? "./HeaderFiles/" : "./SourceFiles/";
+	string filePath;
 
 	if (fileStructure == FileStructure::Combined)
 	{
-		string relativeFilePath = "./" + className + extension;
-		file.open(relativeFilePath.c_str());
+		filePath = "./" + className + extension;		
 	}
 	else
 	{
-		string headerFilePath = folderName + className + extension;
-		file.open(headerFilePath.c_str());
+		filePath = folderName + className + extension;		
 	}
+
+	if (FileExists(filePath))
+	{
+		string input;
+
+		cout << ("File " + filePath + " already exists.") << endl;
+		cout << "Overwrite File?(y/n): ";
+		cin >> input;
+
+		transform(input.begin(), input.end(), input.begin(), tolower);
+
+		if (input.compare("y") == 0 || input.compare("yes") == 0)
+		{
+			file.open(filePath.c_str());
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+		
+	}
+
+	file.open(filePath.c_str());
+	return 0;
 }
 
 int Generator::SaveFile(std::ofstream & file, const std::string text)
@@ -192,6 +227,11 @@ int Generator::CheckDirectories()
 	return 0;
 }
 
+bool Generator::CheckFlag(const std::string & arg, const std::string & flag)
+{
+	return arg.compare(flag) == 0 && arg[0] == '-';
+}
+
 int Generator::ParseCommandArgs(int argc, char* argv[])
 {
 	vector<string> args(argv + 1, argv + argc);
@@ -207,34 +247,37 @@ int Generator::ParseCommandArgs(int argc, char* argv[])
 	// parentClass = argv[2];
 	if (argc > 2)
 	{
+		string arg;
 		for (size_t i = 1; i < args.size(); i++)
 		{
-			if (args[i].compare("-cc") == 0)
+			arg = args[i];
+			;
+			if (CheckFlag(arg, "-cc"))
 			{
 				hasCpyCtor = true;
 				continue;
 			}
-			if (args[i].compare("-ao") == 0)
+			if (CheckFlag(arg, "-ao"))
 			{
 				hasAssigOp = true;
 				continue;
 			}
-			if (args[i].compare("-nd"))
+			if (CheckFlag(arg, "-nd"))
 			{
 				willSkipDirCheck = true;
 				continue;
 			}
-			if (args[i].compare("-i") == 0)
+			if (arg.find("-i") == 0 && arg[0] == '-')
 			{
 				if (i + 1 <= args.size() - 1)
 				{
 					
 					if (args[i + 1].find('-') == -1)
 					{
-						if (args[i].compare("-ipri") == 0) inhAccessor = Inheritance::Private;
-						else if (args[i].compare("-ipro") == 0) inhAccessor = Inheritance::Protected;
-						else if (args[i].compare("-ipub") == 0) inhAccessor = Inheritance::Public;
-						else inhAccessor = Inheritance::Private;
+						if (arg.compare("-ipri") == 0) inhAccessor = Inheritance::Private;
+						else if (arg.compare("-ipro") == 0) inhAccessor = Inheritance::Protected;
+						else if (arg.compare("-ipub") == 0) inhAccessor = Inheritance::Public;
+						else inhAccessor = Inheritance::Private;						
 
 						parentClass = args[i + 1];
 						continue;

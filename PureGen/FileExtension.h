@@ -1,6 +1,6 @@
 #pragma once
 
-enum FileExtension
+enum class FileExtension
 {
 	Header,
 	Cpp

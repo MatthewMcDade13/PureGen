@@ -1,7 +1,7 @@
 #pragma once
 
-enum FileStructure
+enum class FileStructure
 {
-	Separate,
+	Separate = 4,
 	Combined
 };

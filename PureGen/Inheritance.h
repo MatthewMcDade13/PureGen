@@ -1,6 +1,6 @@
 #pragma once
 
-enum Inheritance
+enum class Inheritance
 {
 	Public,
 	Protected,
