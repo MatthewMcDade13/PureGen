@@ -28,7 +28,7 @@ public:
 
 	int GenerateTemplate();
 	
-	int ParseCommandArgs(int argc, char* argv[]);
+	int ParseCommandArgs(std::vector<std::string> args);
 
 
 private:

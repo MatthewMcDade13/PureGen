@@ -6,9 +6,10 @@
 
 int main(int argc, char* argv[])
 {	
+	std::vector<std::string> args(argv + 1, argc + argv);
 
 	Generator gen;
-	if (gen.ParseCommandArgs(argc, argv) != 0)
+	if (gen.ParseCommandArgs(args) != 0)
 	{
 		return 1;
 	}

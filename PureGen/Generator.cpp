@@ -232,11 +232,11 @@ bool Generator::CheckFlag(const std::string & arg, const std::string & flag)
 	return arg.compare(flag) == 0 && arg[0] == '-';
 }
 
-int Generator::ParseCommandArgs(int argc, char* argv[])
+int Generator::ParseCommandArgs(vector<string> args)
 {
-	vector<string> args(argv + 1, argv + argc);
+	// vector<string> args(argv + 1, argv + argc);
 
-	if (argc == 1)
+	if (args.size() == 0)
 	{
 		cout << "No arguments given. Please at least specify Class Name." << endl;
 		return 1;
@@ -245,7 +245,7 @@ int Generator::ParseCommandArgs(int argc, char* argv[])
 	className = args[0];
 
 	// parentClass = argv[2];
-	if (argc > 2)
+	if (args.size() > 0)
 	{
 		string arg;
 		for (size_t i = 1; i < args.size(); i++)
