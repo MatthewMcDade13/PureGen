@@ -1,8 +1,16 @@
 #include "stdafx.h"
 #include "Generator.h"
 #include "FileExists.h"
+#include "TransformString.h"
 
-using namespace std;
+
+Generator::Generator(const GenData& data)
+	:className(data.className), parentClass(data.parentClass),
+	fileStructure(data.fileStructure), inhAccessor(data.inhAccessor),
+	hasCpyCtor(data.hasCpyCtor), hasAssigOp(data.hasAssigOp),
+	willSkipDirCheck(data.willSkipDirCheck)
+{
+}
 
 Generator::Generator()
 { }
@@ -40,16 +48,17 @@ int Generator::GenerateHeader()
 		}
 	}
 
-	transform(definition.begin(), definition.end(), definition.begin(), toupper);
+	// transform(definition.begin(), definition.end(), definition.begin(), toupper);
+	TransformString(definition, toupper);
 
 	text += "#ifndef " + definition + "\n";
 	text += "#define " + definition + "\n\n";
 	text += "class " + className;
 	if (parentClass.size() > 0)
 	{
-		text += " : " + accessor + " " + parentClass + "\n";
+		text += " : " + accessor + " " + parentClass;
 	}
-	text += "{\n";
+	text += "\n{\n";
 	text += "private:\n";
 	text += "public:\n";
 	text += "\t" + className + "();\n";
@@ -129,7 +138,9 @@ int Generator::OpenFile(ofstream& file, FileExtension ext)
 		cout << "Overwrite File?(y/n): ";
 		cin >> input;
 
-		transform(input.begin(), input.end(), input.begin(), tolower);
+		// transform(input.begin(), input.end(), input.begin(), tolower);
+		TransformString(input, tolower);
+		
 
 		if (input.compare("y") == 0 || input.compare("yes") == 0)
 		{
@@ -167,64 +178,11 @@ int Generator::GenerateTemplate()
 	{
 		return 1;
 	}
+	
+	cout << "Files " + className + ".h and " + className + ".cpp created." << endl;
 
 	return 0;
 
-}
-
-int Generator::CheckDirectories()
-{
-	if (willSkipDirCheck == true)
-	{
-		fileStructure = FileStructure::Combined;
-		return 0;
-	}
-
-	// just create template for passed in class name
-	struct stat buf;	
-
-	if (stat("./HeaderFiles", &buf) != 0 || stat("./SourceFiles", &buf) != 0)
-	{
-		cout << "Header File or Source File Directory not found." << endl;
-		cout << "Would you like to create these directories?(y/n): ";
-		string input = "";
-		cin >> input;
-
-		transform(input.begin(), input.end(), input.begin(), tolower);
-
-
-		if (input.compare("yes") ==  0 || input.compare("y") == 0)
-		{
-			fileStructure = FileStructure::Separate;
-
-			#if defined(OS_WINDOWS)
-								
-			if (_mkdir("./HeaderFiles") != 0 || _mkdir("./SourceFiles") != 0)
-			{
-				cout << "Failed to create Directories" << endl;
-				return 1;
-			}									
-
-			#elif defined(OS_LINUX) || defined(OS_APPLE)
-
-			if (mkdir("./HeaderFiles") != 0 || mkdir("./SourceFiles") != 0)
-			{
-				cout << "Failed to create Directories" << endl;
-				return 1;
-			}
-
-			#endif				
-		}
-		else
-		{
-			fileStructure = FileStructure::Combined;
-
-			return 0;
-		}
-	}
-
-	fileStructure = FileStructure::Separate;
-	return 0;
 }
 
 bool Generator::CheckFlag(const std::string & arg, const std::string & flag)
@@ -244,62 +202,55 @@ int Generator::ParseCommandArgs(vector<string> args)
 
 	className = args[0];
 
-	// parentClass = argv[2];
-	if (args.size() > 0)
+	string arg;
+	for (size_t i = 1; i < args.size(); i++)
 	{
-		string arg;
-		for (size_t i = 1; i < args.size(); i++)
+		arg = args[i];
+		;
+		if (CheckFlag(arg, "-cc"))
 		{
-			arg = args[i];
-			;
-			if (CheckFlag(arg, "-cc"))
+			hasCpyCtor = true;
+			continue;
+		}
+		if (CheckFlag(arg, "-ao"))
+		{
+			hasAssigOp = true;
+			continue;
+		}
+		if (CheckFlag(arg, "-nd"))
+		{
+			willSkipDirCheck = true;
+			continue;
+		}
+		if (arg.find("-i") == 0 && arg[0] == '-')
+		{
+			if (i + 1 <= args.size() - 1)
 			{
-				hasCpyCtor = true;
-				continue;
-			}
-			if (CheckFlag(arg, "-ao"))
-			{
-				hasAssigOp = true;
-				continue;
-			}
-			if (CheckFlag(arg, "-nd"))
-			{
-				willSkipDirCheck = true;
-				continue;
-			}
-			if (arg.find("-i") == 0 && arg[0] == '-')
-			{
-				if (i + 1 <= args.size() - 1)
-				{
 					
-					if (args[i + 1].find('-') == -1)
-					{
-						if (arg.compare("-ipri") == 0) inhAccessor = Inheritance::Private;
-						else if (arg.compare("-ipro") == 0) inhAccessor = Inheritance::Protected;
-						else if (arg.compare("-ipub") == 0) inhAccessor = Inheritance::Public;
-						else inhAccessor = Inheritance::Private;						
+				if (args[i + 1].find('-') == -1)
+				{
+					if (arg.compare("-ipriv") == 0) inhAccessor = Inheritance::Private;
+					else if (arg.compare("-iprot") == 0) inhAccessor = Inheritance::Protected;
+					else if (arg.compare("-ipub") == 0) inhAccessor = Inheritance::Public;
+					else inhAccessor = Inheritance::Private;						
 
-						parentClass = args[i + 1];
-						continue;
-					}
-					else
-					{
-						cout << "Given value for inherit flag cannot be a flag or contain character '-'" << endl;
-						return 1;
-					}
-
+					parentClass = args[i + 1];
+					continue;
 				}
 				else
 				{
-					cout << "No Parameter given for inheritor flag." << endl;
+					cout << "Given value for inherit flag cannot be a flag or contain character '-'" << endl;
 					return 1;
 				}
+
+			}
+			else
+			{
+				cout << "No Parameter given for inheritor flag." << endl;
+				return 1;
 			}
 		}
-		return CheckDirectories();		
 	}
-	else
-	{
-		return CheckDirectories();		
-	}
+
+	return SetFileStructure(fileStructure, willSkipDirCheck);
 }

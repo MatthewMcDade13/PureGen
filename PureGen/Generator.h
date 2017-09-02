@@ -1,14 +1,18 @@
 #pragma once
 
+#include "GenData.h"
+#include "PureBase.h"
 #include "FileStructure.h"
 #include "FileExtension.h"
 #include "Inheritance.h"
 
-class Generator
+using namespace std;
+
+class Generator : PureBase
 {
 private:
-	std::string className;
-	std::string parentClass;
+	string className;
+	string parentClass;
 	FileStructure fileStructure;
 	Inheritance inhAccessor;
 	bool hasCpyCtor = false;
@@ -16,19 +20,19 @@ private:
 	bool willSkipDirCheck = false;
 
 	int GenerateHeader();
-	int GenerateCPP();
-	int CheckDirectories();
-	bool CheckFlag(const std::string& arg, const std::string& flag);
-	int SaveFile(std::ofstream& file, const std::string text);
-	int OpenFile(std::ofstream& file, FileExtension ext);
+	int GenerateCPP();	
+	bool CheckFlag(const string& arg, const string& flag);
+	int SaveFile(ofstream& file, const string text);
+	int OpenFile(ofstream& file, FileExtension ext);
 
 public:
-	Generator();	
+	Generator();
+	Generator(const GenData& data);		
 	~Generator();
 
 	int GenerateTemplate();
 	
-	int ParseCommandArgs(std::vector<std::string> args);
+	int ParseCommandArgs(vector<string> args);
 
 
 private:

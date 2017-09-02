@@ -150,13 +150,20 @@
     <ClInclude Include="FileExtension.h" />
     <ClInclude Include="FileStructure.h" />
     <ClInclude Include="Generator.h" />
+    <ClInclude Include="GenData.h" />
+    <ClInclude Include="GetUserInput.h" />
     <ClInclude Include="Inheritance.h" />
+    <ClInclude Include="PureBase.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TransformString.h" />
+    <ClInclude Include="Wizard.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileExists.cpp" />
     <ClCompile Include="Generator.cpp" />
+    <ClCompile Include="GetUserInput.cpp" />
+    <ClCompile Include="PureBase.cpp" />
     <ClCompile Include="PureGen.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -164,6 +171,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TransformString.cpp" />
+    <ClCompile Include="Wizard.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
