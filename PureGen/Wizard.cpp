@@ -2,6 +2,7 @@
 #include "Wizard.h"
 #include "GetUserInput.h"
 
+using namespace std;
 
 Wizard::Wizard()
 {

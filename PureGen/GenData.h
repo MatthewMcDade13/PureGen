@@ -3,12 +3,11 @@
 #include "FileStructure.h"
 #include "Inheritance.h"
 
-using namespace std;
-
 struct GenData
 {
-	string className;
-	string parentClass;
+
+	std::string className;
+	std::string parentClass;
 	FileStructure fileStructure;
 	Inheritance inhAccessor;
 	bool hasCpyCtor = false;

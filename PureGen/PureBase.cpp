@@ -2,6 +2,8 @@
 #include "PureBase.h"
 #include "TransformString.h"
 
+using namespace std;
+
 PureBase::PureBase()
 {
 }

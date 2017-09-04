@@ -2,9 +2,11 @@
 #include "GetUserInput.h"
 #include "TransformString.h"
 
+using namespace std;
 
 string GetUserInput(const string& message, bool isDecision, const vector<string>& answers)
 {
+	
 	string input = "";
 
 	if (isDecision)

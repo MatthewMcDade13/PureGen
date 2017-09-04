@@ -1,8 +1,6 @@
 #pragma once
 #include "FileStructure.h"
 
-using namespace std;
-
 class PureBase
 {
 public:

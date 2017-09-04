@@ -3,6 +3,7 @@
 #include "FileExists.h"
 #include "TransformString.h"
 
+using namespace std;
 
 Generator::Generator(const GenData& data)
 	:className(data.className), parentClass(data.parentClass),

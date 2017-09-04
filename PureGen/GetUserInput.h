@@ -1,6 +1,5 @@
 #pragma once
 
-using namespace std;
 
-string GetUserInput(const string& message, bool isDecision = false, const vector<string>& answers = {});
+std::string GetUserInput(const std::string& message, bool isDecision = false, const std::vector<std::string>& answers = {});
 

@@ -2,8 +2,6 @@
 #include "GenData.h"
 #include "PureBase.h"
 
-using namespace std;
-
 class Wizard : PureBase
 {
 private:
@@ -17,6 +15,6 @@ public:
 	GenData GetGenData();
 
 private:
-	bool CheckYes(const string& input);
+	bool CheckYes(const std::string& input);
 };
 

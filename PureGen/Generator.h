@@ -6,13 +6,12 @@
 #include "FileExtension.h"
 #include "Inheritance.h"
 
-using namespace std;
-
 class Generator : PureBase
 {
 private:
-	string className;
-	string parentClass;
+
+	std::string className;
+	std::string parentClass;
 	FileStructure fileStructure;
 	Inheritance inhAccessor;
 	bool hasCpyCtor = false;
@@ -21,9 +20,9 @@ private:
 
 	int GenerateHeader();
 	int GenerateCPP();	
-	bool CheckFlag(const string& arg, const string& flag);
-	int SaveFile(ofstream& file, const string text);
-	int OpenFile(ofstream& file, FileExtension ext);
+	bool CheckFlag(const std::string& arg, const std::string& flag);
+	int SaveFile(std::ofstream& file, const std::string text);
+	int OpenFile(std::ofstream& file, FileExtension ext);
 
 public:
 	Generator();
@@ -32,7 +31,7 @@ public:
 
 	int GenerateTemplate();
 	
-	int ParseCommandArgs(vector<string> args);
+	int ParseCommandArgs(std::vector<std::string> args);
 
 
 private:
